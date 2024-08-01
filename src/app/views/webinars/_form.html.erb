@@ -1,0 +1,62 @@
+<%
+=begin  
+# Project name: Webinars
+# Description: Create form partial for entering data in database with associations
+# Last Modified: April 22, 2023
+=end
+speakers_array = Array.new()
+Speaker.all.each() do |speaker|
+  speaker_array = Array.new()
+  speaker_array.push(speaker.name)
+  speaker_array.push(speaker.id)
+  speakers_array.push(speaker_array)
+end
+%>
+
+<div class="card">
+  <div class="card-header">
+    <h4>New Webinar</h4>
+  </div>
+  <div class="card-body">
+    <%= form_with(model: webinar, local: true) do |form| %>
+      <% if webinar.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(webinar.errors.count, "error") %> prohibited this webinar from being saved:</h2>
+          <ul>
+            <% webinar.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="field form-group">
+        <%= form.label "Webinar Name:" %><br>
+        <%= form.text_field :webinar_name %>
+      </div>
+
+      <div class="field form-group">
+        <%= form.label "Webinar Description:" %><br>
+        <%= form.text_area :description %>
+      </div>
+
+      <div class="field form-group">
+        <%= form.label "Date and Time:"%><br>
+        <%= form.datetime_select :date_and_time %>
+      </div>
+
+      <div class="field form-group">
+        <label class="form-label", for="webinar_speakers">Speakers (drag to select multiple): </label>
+
+        <br> Speaker not listed? Create a speaker here:
+         <%= link_to "Create Speaker Form", speaker_new_path, class:"btn btn-primary btn-sm"%>
+
+        <%= form.select :speakers, speakers_array, {}, {multiple: true, class: "form-select", id: "webinar_speakers"} %>
+      </div>
+
+      <div class="actions">
+        <%= form.submit class:"btn btn-primary"%>
+      </div>
+    <% end %>
+  </div>
+</div>

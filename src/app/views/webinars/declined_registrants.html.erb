@@ -1,0 +1,63 @@
+<!--
+Project name: RoJ Individual Project 
+Description of project: Enhnacing the RoJ application which now includes a declined registrants page for admins to view 
+Filename: declined_registrants.html.erb
+Description: In this page, the admins can see the declined registrants along with the declined reason 
+Last modified on: 4/8/24 
+ --> 
+
+
+<h3>Declined Registrants for the <%= @webinars.webinar_name %> Webinar</h3>
+
+
+ 
+<!-- decline registrants table -->
+<table class="table table-bordered table-hover">
+  <thead class="thead-dark">
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>State</th>
+      <th>County</th>
+      <th>CLE ID</th>
+      <th>Job</th>
+      <th>Listserv</th>
+      <th>Topics</th>
+      <th>Deregistered?</th>
+      <th>Paid</th>
+      <th>Amount</th>
+      <th>Approved?</th> <!-- add registrant approved section --> 
+      <th>Decline Reason</th> <!-- add registrant declined section --> 
+    </tr>
+  </thead> 
+
+
+  <tbody>
+    <% @webinars.registrants.each do | registrant | %>
+      <% if registrant.approved == false %> <!--Declined registrants -->
+      <tr id="registrant_<%= registrant.id %>">
+        <td><%= registrant.first_name %></td>
+        <td><%= registrant.last_name %></td>
+        <td><%= registrant.email %></td>
+        <td><%= registrant.state %></td>
+        <td><%= registrant.county %></td>
+        <td><%= registrant.cleID %></td>
+        <td><%= registrant.job %></td>
+        <td><%= registrant.listserv %></td>
+        <td><%= registrant.topics %></td>
+        <td><%= registrant.deregistered %></td>
+        <td><%= registrant.paid %></td>
+        <td><%= number_to_currency(registrant.amount) %></td>
+        <td><%= registrant.approved ? "Yes" : "No" %></td> <!-- add registrant approved section --> 
+        <td><%= registrant.declinedReason %></td> <!-- add registrant declined section --> 
+      </tr>
+    <% end %>  
+    <% end %>
+  </tbody>
+</table>
+
+
+
+<%= link_to 'Back to Webinars', "/webinars", class:'btn btn-primary' %>
+

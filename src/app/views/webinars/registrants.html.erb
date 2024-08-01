@@ -1,0 +1,208 @@
+<!--
+Project name:  RoJ Individual Project 
+Description of project: Enhnacing the RoJ application to keep track of the webinar registrants 
+Filename: registrants.html.erb
+Description: Adding a checkbox, approve and decline buttons, and a textbox feature to the webinar registrants page 
+Last modified on: 4/8/24 
+ --> 
+
+<h3>Registrants for the <%= @webinars.webinar_name %> Webinar</h3>
+
+
+<!-- 'Approve' button -->
+<!-- Button container for alignment and spacing -->
+<div style="display: flex; justify-content: flex-end; margin-bottom: 20px; width: 100%">
+  <%= button_tag "Approve", id: "approve-button", style: "display: none; margin-right: -140px; background-color: #6082B6; border-color: #6082B6; color: white; font-weight: bold;", class: "btn" %>
+</div>
+
+<!-- Confirmation message for approval, initially hidden-->
+<div id="confirmation-dialog" style="display: none; position: fixed; z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #F7F9F9; border: 1px solid black; padding: 20px; text-align: center;">
+  <p>Are you sure you want to approve this registrant?</p>
+  <button id="confirm-approval" class="btn" style="background-color: #4CAF50; /* Green */ color: white; padding: 10px 20px; margin: 10px; border: none; border-radius: 4px; cursor: pointer;">Ok</button>
+  <button onclick="document.getElementById('confirmation-dialog').style.display='none'" class="btn" style="background-color: #ad241a; /* Red */ color: white; padding: 10px 20px; margin: 10px; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+</div>
+
+
+<!-- registrants table -->
+<table class="table table-bordered table-hover">
+  <thead class="thead-dark">
+    <tr>
+      <th>Approve Selection</th> <!-- Empty header for checkboxes, so they align with the checkbox column -->
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>State</th>
+      <th>County</th>
+      <th>CLE ID</th>
+      <th>Job</th>
+      <th>Listserv</th>
+      <th>Topics</th>
+      <th>Deregistered?</th>
+      <th>Paid</th>
+      <th>Amount</th>
+      <th>Approved Status</th> <!-- add registrant approved section --> 
+      <th>Decline Reason</th> <!-- add registrant declined reason section --> 
+    </tr>
+  </thead>
+
+
+  <tbody>
+    <% @webinars.registrants.each do | registrant | %>
+      <!-- To determine whether a registrant for a webinar is approved or not -->
+      <% if registrant.declinedReason == nil %>
+      <!-- table row for registrants -->
+      <tr id="registrant_<%= registrant.id %>">
+        <td><%= check_box_tag "selected_registrants[]", registrant.id, false, class: "registrant-checkbox", onchange: "toggleButtons()" %></td> <!-- Checkbox column -->
+        <td><%= registrant.first_name %></td>
+        <td><%= registrant.last_name %></td>
+        <td><%= registrant.email %></td>
+        <td><%= registrant.state %></td>
+        <td><%= registrant.county %></td>
+        <td><%= registrant.cleID %></td>
+        <td><%= registrant.job %></td>
+        <td><%= registrant.listserv %></td>
+        <td><%= registrant.topics %></td>
+        <td><%= registrant.deregistered %></td>
+        <td><%= registrant.paid %></td>
+        <td><%= number_to_currency(registrant.amount) %></td>
+        <td><%= registrant.approved ? "Yes" : "No" %></td> <!-- add registrant approved section --> 
+
+        <%# call the JavaScript function whenever needed%>
+        <%# <div style = "opacity: 1", id = "decline-form"> %>
+        <!-- the form is used to submit a PATCH request to update the status of a webinar registrant-->
+        <td><%= form_with(model: @webinars.registrants, url: decline_registrant_path(registrant), method: :patch, id: "decline-form", local: true) do  %>
+          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+          <%= hidden_field_tag :webinar_id, @webinars.id %>
+
+          <div class="form-group">
+            <%= label_tag :reason, "Reason for Declination:" %>
+            <%= text_area_tag :reason, nil, class: "form-control", id: "reason-text" %>
+        </div>
+        
+
+        <%= submit_tag "Decline", class: "btn btn-danger" %>
+  
+        </td> 
+    <% end %>
+    <%# </div> %>
+      </tr>
+      <% end %>
+      <% end %>
+    </tbody>
+  </table>
+
+
+
+<%= link_to 'Back to Webinars', "/webinars", class:'btn btn-primary' %>
+
+
+<script type="text/javascript">
+  // Function to show or hide the Approve and Decline buttons based on checkbox selection
+  function toggleButtons() {
+    var checkedCount = document.querySelectorAll('.registrant-checkbox:checked').length;
+    var checked = document.querySelectorAll('.registrant-checkbox:checked');
+    var approveButton = document.getElementById('approve-button');
+    var declineButton = document.getElementById('decline-button');
+   
+    // Show the buttons if any checkboxes are checked, hide them otherwise
+    approveButton.style.display = checkedCount > 0 ? 'inline-block' : 'none';
+    declineButton.style.display = checkedCount > 0 ? 'inline-block' : 'none';
+    
+    if(checkedCount === 1) {
+      var selectedRegistrantId = checked[0].value;
+      declineButton.setAttribute('onclick', 'showDeclineForm(' + selectedRegistrantId + ')');
+
+    }
+
+  }
+
+  // Function to show the Declination form
+  function showDeclineForm(registrantId) {
+    var form = document.getElementById('decline-form-' + registrantId);
+    form.style.display = 'block';
+    form.style.opacity = 1; 
+    document.getElementById('reason-text' + registrantId).focus();
+  }
+ 
+  
+
+  // Function to show the confirmation message
+  function showConfirmationDialog() {
+    var dialog = document.getElementById('confirmation-dialog');
+    dialog.style.display = 'block';
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Event listener for checkboxes to toggle Approve button
+    document.querySelectorAll('.registrant-checkbox').forEach(function(checkbox) {
+      checkbox.addEventListener('change', function() {
+        const row = this.closest('tr');
+        if (this.checked) {
+          row.classList.add('highlight');
+        } else {
+          row.classList.remove('highlight');
+        }
+        toggleButtons(); // Call toggleButtons to handle button visibility
+      });
+    });
+  });
+
+
+  
+
+// Event listener for the Decline button
+document.addEventListener('DOMContentLoaded', function() {
+  var declineButtons = document.querySelectorAll('.btn.btn-danger');
+
+  declineButtons.forEach(function(button) {
+    button.addEventListener('click', function(event) {
+      var reasonInput = this.closest('tr').querySelector('.form-control');
+      if (!reasonInput.value.trim()) {
+        event.preventDefault();
+        alert('You must enter a reason for declination.');
+        reasonInput.focus();
+      }
+    });
+  });
+});
+
+
+  // Event listener for the Approve button to show the confirmation dialog
+  document.getElementById('approve-button').addEventListener('click', showConfirmationDialog);
+
+  document.getElementById('confirm-approval').addEventListener('click', function() {
+  // Assume only one registrant can be selected/approved at a time ---> 
+  var selectedRegistrantId = document.querySelector('.registrant-checkbox:checked').value;
+  
+ 
+  // sends a POST request to approve a selected registrant to update their approval status 
+  fetch(`/registrants/${selectedRegistrantId}/approve`, {
+    method: 'POST',
+    headers: {
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ approved: true }),
+    credentials: 'same-origin'
+  }).then(response => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error('Something went wrong on API server!');
+    }
+  }).then(response => {
+    console.log(response);
+    alert('Registrant approved!');
+    var row = document.querySelector(`#registrant_${selectedRegistrantId}`);
+    // Update the cell for the approval status
+    row.cells[row.cells.length - 2].textContent = "Yes";
+    document.getElementById('confirmation-dialog').style.display = 'none';
+  }).catch(error => {
+    console.error(error);
+  });
+});
+
+</script>
+
+
+

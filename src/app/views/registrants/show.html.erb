@@ -1,0 +1,69 @@
+<!-- Team 12 -->
+<!-- Modified on 4/27/23 -->
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>First name:</strong>
+  <%= @registrant.first_name %>
+</p>
+
+<p>
+  <strong>Last name:</strong>
+  <%= @registrant.last_name %>
+
+</p>
+
+<p>
+  <strong>Email:</strong>
+  <%= @registrant.email %>
+</p>
+
+<p>
+
+  <strong>Webinar:</strong>
+  <%= @registrant.webinar %>
+</p>
+
+<strong>State:</strong>
+  <%= @registrant.state %>
+</p>
+
+<p>
+  <strong>County:</strong>
+  <%= @registrant.county %>
+</p>
+<p>
+  <strong>CLE ID:</strong>
+  <%= @registrant.cleID %>
+</p>
+
+<p>
+  <strong>Job:</strong>
+  <%= @registrant.job %>
+</p>
+
+<p>
+  <strong>Listserv:</strong>
+  <%= @registrant.listserv %>
+</p>
+
+<p>
+  <strong>Topics:</strong>
+  <%= @registrant.topics %>
+</p>
+
+<p>
+  <strong>Paid:</strong>
+  <%= @registrant.paid %>
+</p>
+
+<p>
+  <strong>Amount:</strong>
+  <%= number_to_currency(@registrant.amount) %>
+</p>
+
+
+
+<%# <%= link_to 'Edit', edit_registrant_path(@registrant) temporary fix %>
+<%= link_to 'Back', webinars_path %>

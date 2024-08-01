@@ -1,0 +1,53 @@
+<%#
+  Project name: ACCR Pro Bono Breakdown
+  Description: Pro bono hour management system for ACCR community partner
+  Filename: show.html.erb
+  Description: Page used as a form for display pro bono hours
+  Last modified on: 4/26/23
+  Code written by Team 21
+  Last Edited by Team 24
+%>
+
+<h2> Pro Bono Log Entry </h2>
+<table class="table table-hover table-striped">
+    <body>
+      <tr>
+        <td><strong>Lawyer Name:</strong>
+          <%= @donation.lawyername %></td>
+
+        <td><strong>Service Type:</strong>
+          <%= @donation.caseaddress %></td>
+      </tr>
+      <tr>
+        <td class="location-tab"><strong>Service Name:</strong>
+            <%= @donation.name %></td>
+        <td class="location-tab"><strong>Total Hours:</strong>
+            <%= @donation.hours %></td>
+      </tr>
+      <tr>
+        <td class="location-tab"><strong>Hourly Fee:</strong>
+            <%= number_to_currency(@donation.fees) %></td>
+        <td><strong>Date:</strong>
+            <%= @donation.date&.strftime("%m/%d/%Y") %></td>
+      </tr>
+     
+      <tr>
+
+        <td><strong>Description:</strong>
+            <%= @donation.description %></td>
+            <td>  <strong>Project:</strong>
+            <%= Project.find_by(id: @donation.name) %></td>
+
+        <%# Fixed 3/27/23, by Team 24, function name() was not nested corrently %>
+        <td class="location-tab" colspan="2" ><strong>Description: </strong>
+          <%= @donation.description %></td>
+
+      </tr>
+    
+    </body>
+</table>
+<br>
+<br>
+<div class="container">
+  <%= link_to 'Back', :donations %>
+</div>

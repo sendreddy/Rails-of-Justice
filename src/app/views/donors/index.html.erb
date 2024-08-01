@@ -1,0 +1,97 @@
+
+<!--
+Project name: Individual Project RoJ
+Description of project: Enhnacing the RoJ application 
+Filename: index.html.erb
+Description: When adding new Donors/Donations to either table, the buttons are moved to the top 
+             of the table instead of the bottom. This can prevent users from having to scroll down 
+             on the table, especially if there are thousands of entries.
+Last modified on: 3/17/24
+--> 
+
+<style>
+body {
+    font-family: Helvetica;
+}
+
+h1 {
+  color: rgb(48, 140, 190);
+  text-align: left;
+  font-weight: bold;
+}
+
+p {
+  font-family: verdana;
+  font-size: 20px;
+}
+
+.btn-indigo {
+  color: rgb(255, 255, 255);
+  background-color: rgb(34,0,155);
+  border-color: rgb(34,0,155);
+  text-align: left;
+}
+
+.btn-lightBlue {
+  color: rgb(255, 255, 255);
+  background-color: rgb(48, 140, 190);
+  border-color: rgb(48, 140, 190);
+  text-align: center;
+}
+
+/* Additional style for space below the buttons */
+.btn-container {
+  margin-bottom: 20px; /* Space between the buttons and the table */
+  text-align: right; /* Aligns the content of the div to the right */
+}
+
+</style>
+
+<p id="notice"><%= notice %></p>
+
+
+
+
+<h1>Donors</h1>
+
+<div class="btn-container">
+  <%= link_to 'New Donor', new_donor_path, class: "btn btn-lightBlue text-left" %>
+  <%= link_to 'View Donations', inkinds_path, class: "btn btn-indigo text-left" %>
+</div>
+
+
+
+<table class="table table-striped table-light table-bordered table-hover" data-toggle="table">
+  <thead>
+    <tr>
+      <th data-field="name" data-sortable="false">Name</th>
+      <th data-field="date" data-sortable="true">Email</th>
+      <th>Phone Number</th>
+      <th data-field="address" data-sortable="true">Address</th>
+      <th data-field="id" data-sortable="true">ID</th>
+	  <!-- For sorting to work, the number of headers must equal the
+	  number of data elements. -->
+      <!-- <th colspan="3"></th> -->
+	  <th></th>
+	  <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @donors.each do |donor| %>
+      <tr>
+        <td><%= link_to donor.donor_name, donor %></td>
+        <td><%= donor.email %></td>
+        <td><%= format_phone_number(donor.phoneNumber) %></td>
+        <td><%= donor.location %></td>
+        <td><%= donor.id %></td>
+		<!-- TODO: UI change: Maybe merge these into one table entry,
+		under the header "Actions" or something? -->
+        <td><%= link_to 'Edit', edit_donor_path(donor) %></td>
+        <td><%= link_to 'Remove', donor, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
